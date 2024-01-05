@@ -1,0 +1,41 @@
+provider "azurerm" {
+  features {}
+}
+
+resource "azurerm_resource_group" "example" {
+  name     = "example-resources"
+  location = "West Europe"
+}
+
+resource "azurerm_b2c_tenant" "example" {
+  name                = "exampleb2ctenant"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+}
+
+resource "azurerm_b2c_identity_provider" "example" {
+  name                = "AzureAD"
+  resource_group_name = azurerm_resource_group.example.name
+  b2c_tenant_id       = azurerm_b2c_tenant.example.id
+
+  client_id            = "client_id_here"
+  client_secret        = "client_secret_here"
+  metadata_address     = "https://login.microsoftonline.com/example/metadata"
+  allow_authentication = true
+}
+
+resource "azurerm_b2c_custom_policy" "example" {
+  name                = "examplePolicy"
+  resource_group_name = azurerm_resource_group.example.name
+  b2c_tenant_id       = azurerm_b2c_tenant.example.id
+  policy_xml          = file("${path.module}/policies/example_policy.xml")
+}
+
+resource "azurerm_b2c_user_flow" "example" {
+  name                = "exampleUserFlow"
+  resource_group_name = azurerm_resource_group.example.name
+  b2c_tenant_id       = azurerm_b2c_tenant.example.id
+  user_flow_type      = "Signin"
+  identity_providers  = [azurerm_b2c_identity_provider.example.name]
+  custom_policy       = azurerm_b2c_custom_policy.example.id
+}
