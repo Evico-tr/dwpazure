@@ -39,3 +39,29 @@ resource "azurerm_b2c_user_flow" "example" {
   identity_providers  = [azurerm_b2c_identity_provider.example.name]
   custom_policy       = azurerm_b2c_custom_policy.example.id
 }
+
+
+
+
+
+
+
+provider "azurerm" {
+  features {}
+}
+
+resource "azurerm_b2c_tenant" "example" {
+  name     = "exampleb2ctenant"
+  location = "West Europe"
+}
+
+resource "azurerm_b2c_application" "example_app" {
+  name                = "YourAppDisplayName"
+  b2c_tenant_id       = azurerm_b2c_tenant.example.id
+  reply_urls          = ["https://yourapp.com"]
+  available_to_other_tenants = false
+}
+
+resource "azurerm_b2c_application_password" "example_secret" {
+  application_object_id = azurerm_b2c_application.example_app.object_id
+}
