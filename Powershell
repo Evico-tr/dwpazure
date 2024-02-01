@@ -1,0 +1,38 @@
+provider "azurerm" {
+  features = {}
+}
+
+resource "null_resource" "create_user_flow" {
+  triggers = {
+    # Specify any triggers that would cause the script to be re-run
+    always_run = "${timestamp()}"
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      $tenantId = "<Your Azure AD B2C Tenant ID>"
+      $clientId = "<Your Azure AD B2C Application (client) ID>"
+      $clientSecret = "<Your Azure AD B2C Application client secret>"
+      $userFlowName = "B2C_1_SignUpSignIn"
+
+      # Run your PowerShell script here
+      $scriptPath = "${path.module}/scripts/create_user_flow.ps1"
+      powershell -File $scriptPath -TenantId $tenantId -ClientId $clientId -ClientSecret $clientSecret -UserFlowName $userFlowName
+    EOT
+  }
+}
+
+
+
+param (
+    [string]$TenantId,
+    [string]$ClientId,
+    [string]$ClientSecret,
+    [string]$UserFlowName
+)
+
+# Sign in with service principal
+az login --service-principal --tenant $TenantId --client-id $ClientId --client-secret $ClientSecret
+
+# Create Azure AD B2C user flow
+az ad b2c user-flow create --tenant-id $TenantId --name $UserFlowName --profile-editable-profile "givenName,surname" --password-reset
