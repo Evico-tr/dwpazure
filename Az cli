@@ -1,0 +1,36 @@
+provider "azurerm" {
+  features {}
+}
+
+resource "azurerm_resource_group" "example" {
+  name     = "example-resources"
+  location = "East US"
+}
+
+resource "null_resource" "create_user_flow" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      # Define your Azure AD B2C Tenant ID, Client ID, and Client Secret
+      $tenantId     = "<Your Azure AD B2C Tenant ID>"
+      $clientId     = "<Your Azure AD B2C Application (client) ID>"
+      $clientSecret = "<Your Azure AD B2C Application client secret>"
+
+      # Define the user flow name and custom attribute
+      $userFlowName          = "B2C_1_SignUpSignIn"
+      $customAttributeName  = "organizationId"
+
+      # Sign in with service principal
+      az login --service-principal --tenant $tenantId --client-id $clientId --client-secret $clientSecret
+
+      # Create custom attribute in Azure AD B2C
+      az ad b2c extension-attribute-definition create --name $customAttributeName --datatype string --targetObjectId user
+
+      # Create Azure AD B2C user flow
+      az ad b2c user-flow create --tenant-id $tenantId --name $userFlowName --profile-editable-profile "givenName,surname,$customAttributeName" --password-reset
+    EOT
+  }
+}
