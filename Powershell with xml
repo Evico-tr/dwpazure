@@ -1,1 +1,33 @@
+provider "azurerm" {
+  features {}
+}
 
+resource "azurerm_resource_group" "example" {
+  name     = "example-resources"
+  location = "East US"
+}
+
+resource "null_resource" "deploy_user_flow_xml" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      # Define your Azure AD B2C Tenant ID, Client ID, and Client Secret
+      $tenantId     = "<Your Azure AD B2C Tenant ID>"
+      $clientId     = "<Your Azure AD B2C Application (client) ID>"
+      $clientSecret = "<Your Azure AD B2C Application client secret>"
+
+      # Define the XML file path
+      $xmlFilePath  = "${path.module}/user_flow_config.xml"
+
+      # Authenticate with Azure using PowerShell
+      Connect-AzAccount -TenantId $tenantId -ApplicationId $clientId -Password $clientSecret
+
+      # Upload the XML user flow configuration
+      # Example PowerShell command to upload XML configuration
+      # Set-AzureADPolicy -Id "B2C_1A_CustomPolicy" -XMLInput $xmlFilePath
+    EOT
+  }
+}
