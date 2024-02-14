@@ -7,7 +7,7 @@ resource "azurerm_resource_group" "example" {
   location = "East US"
 }
 
-resource "null_resource" "create_user_flow" {
+resource "null_resource" "deploy_user_flow_xml" {
   triggers = {
     always_run = "${timestamp()}"
   }
@@ -19,18 +19,14 @@ resource "null_resource" "create_user_flow" {
       $clientId     = "<Your Azure AD B2C Application (client) ID>"
       $clientSecret = "<Your Azure AD B2C Application client secret>"
 
-      # Define the user flow name and custom attribute
-      $userFlowName          = "B2C_1_SignUpSignIn"
-      $customAttributeName  = "organizationId"
+      # Define the XML file path
+      $xmlFilePath  = "${path.module}/user_flow_config.xml"
 
       # Sign in with service principal
       az login --service-principal --tenant $tenantId --client-id $clientId --client-secret $clientSecret
 
-      # Create custom attribute in Azure AD B2C
-      az ad b2c extension-attribute-definition create --name $customAttributeName --datatype string --targetObjectId user
-
-      # Create Azure AD B2C user flow
-      az ad b2c user-flow create --tenant-id $tenantId --name $userFlowName --profile-editable-profile "givenName,surname,$customAttributeName" --password-reset
+      # Upload the XML user flow configuration
+      az ad b2c policy set --name B2C_1A_CustomPolicy --policy-id B2C_1A_CustomPolicy --content @$xmlFilePath --debug
     EOT
   }
 }
