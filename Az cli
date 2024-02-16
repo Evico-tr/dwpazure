@@ -33,6 +33,36 @@ resource "null_resource" "deploy_user_flow_xml" {
 
 
 
+
+
+provider "azurerm" {
+  features {}
+}
+
+resource "azurerm_resource_group" "example" {
+  name     = "example-resources"
+  location = "East US"
+}
+
+resource "azurerm_azuread_application" "example" {
+  name                       = "example-app"
+  oauth2_allow_implicit_flow = true
+}
+
+resource "azurerm_azuread_application_password" "example" {
+  application_object_id = azurerm_azuread_application.example.id
+}
+
+output "client_id" {
+  value = azurerm_azuread_application.example.application_id
+}
+
+output "client_secret" {
+  value = azurerm_azuread_application_password.example.value
+}
+
+
+
 resource "null_resource" "deploy_user_flow_xml" {
   triggers = {
     always_run = "${timestamp()}"
