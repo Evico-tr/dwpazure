@@ -30,3 +30,27 @@ resource "null_resource" "deploy_user_flow_xml" {
     EOT
   }
 }
+
+
+
+resource "null_resource" "deploy_user_flow_xml" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      # Set Azure CLI environment variables for authentication
+      export AZURE_TENANT_ID="${azurerm_aad_b2c_directory.tenant.tenant_id}"
+      export AZURE_CLIENT_ID="${var.client_id}"
+      export AZURE_CLIENT_SECRET="${var.client_secret}"
+
+      # Define the XML file path
+      xml_file_path="${path.module}/user_flow_config.xml"
+
+      # Upload the XML user flow configuration
+      az login --service-principal --tenant ${azurerm_aad_b2c_directory.tenant.tenant_id} --username ${var.client_id} --password ${var.client_secret}
+      az ad b2c policy set --name B2C_1A_CustomPolicy --policy-id B2C_1A_CustomPolicy --content @$xml_file_path --debug
+    EOT
+  }
+}
