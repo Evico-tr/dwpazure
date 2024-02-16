@@ -84,3 +84,7 @@ resource "null_resource" "deploy_user_flow_xml" {
     EOT
   }
 }
+
+
+ ERROR: cli.azure.cli.core.azclierror: 'b2c' is misspelled or not recognized by the system.
+│ ERROR: az_command_data_logger: 'b2c' is misspelled or not recognized by the system.
