@@ -19,3 +19,38 @@ resource "null_resource" "create_user_flow" {
     EOT
   }
 }
+
+
+provider "http" {
+  # No configuration needed
+}
+
+data "http" "access_token" {
+  url = "https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+  
+  request_headers = {
+    "Content-Type" = "application/x-www-form-urlencoded"
+  }
+  
+  request_body = "grant_type=client_credentials&client_id={client_id}&client_secret={client_secret}&scope=https://graph.microsoft.com/.default"
+}
+
+locals {
+  access_token = jsondecode(data.http.access_token.body)["access_token"]
+}
+
+resource "null_resource" "upload_user_flow" {
+  triggers = {
+    always_run = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      curl -X PUT \
+           -H "Content-Type: application/xml" \
+           -H "Authorization: Bearer ${local.access_token}" \
+           --data-binary "@user_flow_config.xml" \
+           "https://graph.microsoft.com/beta/policies"
+    EOT
+  }
+}
