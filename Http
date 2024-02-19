@@ -1,0 +1,21 @@
+provider "http" {
+  # No configuration needed
+}
+
+resource "null_resource" "create_user_flow" {
+  # No provider specified, defaults to the http provider
+  # This is just a placeholder resource, as there's no specific resource type for Azure Graph API requests in Terraform
+
+  triggers = {
+    always_run = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      curl -X PUT \
+           -H "Content-Type: application/xml" \
+           --data-binary "@${path.module}/user_flow_config.xml" \
+           "https://graph.microsoft.com/beta/policies"
+    EOT
+  }
+}
