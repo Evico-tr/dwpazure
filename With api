@@ -1,0 +1,19 @@
+provider "azurerm" {
+  features {}
+}
+
+resource "azurerm_generic_resource" "create_user_flow" {
+  provider = azurerm.generic
+
+  resource_uri = "https://graph.microsoft.com/beta/policies"
+
+  request_method = "PUT"
+
+  request_headers = {
+    "Content-Type" = "application/xml"
+  }
+
+  request_body = file("${path.module}/user_flow_config.xml")
+
+  # Add dependencies if needed
+}
