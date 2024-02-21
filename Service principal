@@ -1,0 +1,38 @@
+provider "azurerm" {
+  features {}
+}
+
+# Create a Service Principal
+resource "azurerm_service_principal" "example" {
+  name                       = "example-service-principal"
+  # Additional configurations as needed
+}
+
+# Manage the secret for the Service Principal
+resource "azurerm_service_principal_password" "example" {
+  service_principal_id       = azurerm_service_principal.example.id
+  value                      = "YourSecretValue"  # Generate a secure secret or use a dynamic secret generation method
+  # Additional configurations as needed
+}
+
+# Authenticate with Azure using the Service Principal's credentials
+provider "azurerm" {
+  features {}
+  client_id                 = azurerm_service_principal.example.application_id
+  client_secret             = azurerm_service_principal_password.example.value
+  tenant_id                 = "YourTenantID"
+}
+
+# Upload User Flow XML using PowerShell
+resource "null_resource" "upload_user_flow" {
+  triggers = {
+    # Add triggers if needed, e.g., checksum of the XML file
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      pwsh -Command "Connect-AzAccount -ServicePrincipal -TenantId '${var.tenant_id}' -ApplicationId '${azurerm_service_principal.example.application_id}' -CertificateThumbprint '${azurerm_service_principal_password.example.value}'"
+      pwsh -Command "Set-AzB2CUserFlow -TenantId 'YourTenantID' -Name 'YourUserFlowName' -UserFlowFilePath 'path/to/your/userflow.xml'"
+    EOT
+  }
+}
