@@ -1,0 +1,24 @@
+provider "azurerm" {
+  features {}
+}
+
+resource "null_resource" "deploy_user_flow" {
+  # This resource does nothing on its own but can be used to run local-exec provisioners
+}
+
+resource "azurerm_b2c_user_flow" "example" {
+  name                = "exampleUserFlow"
+  resource_group_name = azurerm_resource_group.example.name
+  b2c_tenant_id       = azurerm_b2c_tenant.example.id
+  user_flow_type      = "Signin"
+  identity_providers  = [azurerm_b2c_identity_provider.example.name]
+  custom_policy       = azurerm_b2c_custom_policy.example.id
+
+  provisioner "local-exec" {
+    command = <<EOT
+      pwsh -File "./deploy_user_flow.ps1" -clientID "${azurerm_azuread_application.example.application_id}" -clientSecret "${azurerm_azuread_application_password.example_app_secret.value}" -tenantID "${azurerm_azuread_tenant.example.tenant_id}" -filePath "${path.module}/user_flow_config.xml"
+    EOT
+  }
+
+  depends_on = [azurerm_b2c_tenant.example]
+}
