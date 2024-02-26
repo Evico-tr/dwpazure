@@ -1,0 +1,2 @@
+UserFlowAttributesClient.BaseClient.Get(): unexpected status 403 with OData error: AADB2C: The application does not have any of the required delegated permissions
+│ (IdentityUserFlow.Read.All, IdentityUserFlow.ReadWrite.All) to access the resource. 
