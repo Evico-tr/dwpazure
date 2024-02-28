@@ -1,0 +1,13 @@
+PS /Users/emeka.anachebe/repos/GitHub/cms-sa-employer-idp-azure-adb2c> New-MgBetaTrustFrameworkPolicy -BodyParameter @{trustFrameworkPolicy = .\user_flow_config.xml }
+New-MgBetaTrustFrameworkPolicy_Create: The policy being uploaded is not XML or is not correctly formatted: Data at the root level is invalid. Line 1, position 1.
+Status: 400 (BadRequest)
+ErrorCode: AADB2C
+Date: 2024-02-28T23:26:03
+Headers:
+Cache-Control                 : no-cache
+Vary                          : Accept-Encoding
+Strict-Transport-Security     : max-age=31536000
+request-id                    : 351ab428-7287-448c-932a-6e3df0ca6723
+client-request-id             : 9e80a628-3227-4bf0-9701-edc351b26ef3
+x-ms-ags-diagnostic           : {"ServerInfo":{"DataCenter":"UK South","Slice":"E","Ring":"3","ScaleUnit":"001","RoleInstance":"LN2PEPF0000F89A"}}
+Date                          : Wed, 28 Feb 2024 23:26:02 GM
