@@ -6,3 +6,35 @@ null_resource.upload_user_flow (local-exec):    at System.Runtime.ExceptionServi
 null_resource.upload_user_flow (local-exec):    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
 null_resource.upload_user_flow (local-exec):    at System.Web.Http.HttpServer.&lt;SendAsync&gt;d__24.MoveNext()</StackTrace></Error>
 null_resource.upload_user_flow: Creation complete after 1s [id=7675197542013355465]
+
+
+
+data "http" "access_token" {
+  url = "https://login.microsoftonline.com/${azurerm_aadb2c_directory.tenant.tenant_id}/oauth2/v2.0/token"
+  
+  request_headers = {
+    "Content-Type" = "application/x-www-form-urlencoded"
+  }
+  
+  request_body = "grant_type=client_credentials&client_id=${module.tenant.client_id}&client_secret=${module.tenant.client_secret}&scope=https://graph.microsoft.com/.default"
+}
+
+locals {
+  access_token = jsondecode(data.http.access_token.response_body)["access_token"]
+}
+
+resource "null_resource" "upload_user_flow" {
+  triggers = {
+    always_run = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      curl -X PUT \
+           -H "Content-Type: application/json" \
+           -H "Authorization: Bearer ${local.access_token}" \
+           --data-binary "@userflow.json" \
+           "https://main.b2cadmin.ext.azure.com/api/adminuserjourneys?tenantId=${var.rg_name}.onmicrosoft.com"
+    EOT
+  }
+}
