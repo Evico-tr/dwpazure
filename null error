@@ -1,0 +1,8 @@
+null_resource.upload_user_flow (local-exec): <Error><Message>An error has occurred.</Message><ExceptionMessage>No MediaTypeFormatter is available to read an object of type 'HttpError' from content with media type 'application/problem+json'.</ExceptionMessage><ExceptionType>System.Net.Http.UnsupportedMediaTypeException</ExceptionType><StackTrace>   at System.Net.Http.HttpContentExtensions.ReadAsAsync[T](HttpContent content, Type type, IEnumerable`1 formatters, IFormatterLogger formatterLogger, CancellationToken cancellationToken)
+null_resource.upload_user_flow (local-exec):    at Microsoft.Cpim.Web.Admin.ExceptionManager.RemoveStackTracesIfNeeded(HttpResponseMessage response) in C:\__w\1\s\src\Production\Web.Admin\ExceptionManager.cs:line 645
+null_resource.upload_user_flow (local-exec):    at Microsoft.Cpim.Web.Admin.CpimRequestMessageHandler.&lt;SendAsync&gt;d__0.MoveNext() in C:\__w\1\s\src\Production\Web.Admin\CpimRequestMessageHandler.cs:line 40
+null_resource.upload_user_flow (local-exec): --- End of stack trace from previous location where exception was thrown ---
+null_resource.upload_user_flow (local-exec):    at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+null_resource.upload_user_flow (local-exec):    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+null_resource.upload_user_flow (local-exec):    at System.Web.Http.HttpServer.&lt;SendAsync&gt;d__24.MoveNext()</StackTrace></Error>
+null_resource.upload_user_flow: Creation complete after 1s [id=7675197542013355465]
