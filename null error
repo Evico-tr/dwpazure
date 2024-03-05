@@ -73,3 +73,26 @@ function Add-UserFlow {
 │     │ data.http.access_token.response_body is "{\"error\":\"invalid_resource\",\"error_description\":\"AADSTS500011: The resource principal named https://main.b2cadmin.ext.azure.com was not found in the tenant named azb2cpocemeka. This can happen if the application has not been installed by the administrator of the tenant or consented to by any user in the tenant. You might have sent your authentication request to the wrong tenant. Trace ID: 0d57c3ee-b077-4309-b733-5b74744f0800 Correlation ID: 46ce202e-27d6-4a69-b26d-a0f5eaddca86 Timestamp: 2024-03-04 23:14:41Z\",\"error_codes\":[500011],\"timestamp\":\"2024-03-04 23:14:41Z\",\"trace_id\":\"0d57c3ee-b077-4309-b733-5b74744f0800\",\"correlation_id\":\"46ce202e-27d6-4a69-b26d-a0f5eaddca86\",\"error_uri\":\"https://login.microsoftonline.com/error?code=500011\"}"
 │ 
 │ The given key does not identify an element in this collection value.
+
+
+
+
+resource "null_resource" "add_user_flow" {
+  triggers = {
+    always_run = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      # Get access token for the B2C tenant
+      access_token=$(az account get-access-token --tenant ${var.b2c_tenant_name}.onmicrosoft.com --query accessToken -o tsv)
+
+      # Creating user flow
+      curl -X POST \
+           -H "Authorization: Bearer $access_token" \
+           -H "Content-Type: application/json" \
+           --data-binary "@${path.module}/${var.definition_file_path}" \
+           "https://main.b2cadmin.ext.azure.com/api/adminuserjourneys?tenantId=${var.b2c_tenant_name}.onmicrosoft.com"
+    EOT
+  }
+}
