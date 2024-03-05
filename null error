@@ -96,3 +96,8 @@ resource "null_resource" "add_user_flow" {
     EOT
   }
 }
+
+
+
+<Error><Message>An error has occurred.</Message><ExceptionMessage>The following ClaimType id(s) are not valid self asserted asserted claims: extension_OrgLegacyID</ExceptionMessage><CorrelationId>48c4d9f4-555b-4e73-bc08-728fb86ae41c</CorrelationId><Code>AADB2C</Code><StackTrace /></Error>
+null_resource.add_user_flow: Creation complete after 3s [id=81311815175192714]
