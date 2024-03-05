@@ -41,6 +41,30 @@ resource "null_resource" "upload_user_flow" {
 
 
 
+function Add-UserFlow {
+  param(
+    [string] $B2CTenantName,
+    [string] $DefinitionFilePath
+  )
+
+  $B2CTenantId = "$($B2CTenantName).onmicrosoft.com"
+
+  # Get access token for the B2C tenant with audience "management.core.windows.net".
+  $managementAccessToken = $(az account get-access-token --tenant $B2CTenantId --query accessToken -o tsv)
+
+  Write-Host "Creating $($DefinitionFilePath) user flow..."
+  $signinFlowContent = Get-Content $DefinitionFilePath
+  # Using WebRequest here, because Microsoft Graph is currently not able to create user flows with custom properties.
+  Invoke-WebRequest -Uri "https://main.b2cadmin.ext.azure.com/api/adminuserjourneys?tenantId=$($B2CTenantId)" `
+    -Method "POST" `
+    -Headers @{
+      "Authorization" = "Bearer $($managementAccessToken)";
+      "Content-Type" = "application/json"
+    } `
+    -Body $signinFlowContent
+}
+
+
 │ Error: Invalid index
 │ 
 │   on main.tf line 85, in locals:
