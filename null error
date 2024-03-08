@@ -101,3 +101,14 @@ resource "null_resource" "add_user_flow" {
 
 <Error><Message>An error has occurred.</Message><ExceptionMessage>The following ClaimType id(s) are not valid self asserted asserted claims: extension_OrgLegacyID</ExceptionMessage><CorrelationId>48c4d9f4-555b-4e73-bc08-728fb86ae41c</CorrelationId><Code>AADB2C</Code><StackTrace /></Error>
 null_resource.add_user_flow: Creation complete after 3s [id=81311815175192714]
+
+
+
+
+Error: Creating user flow attribute "Business Service Authorisation"
+│ 
+│   with module.attributes.azuread_user_flow_attribute.bsa,
+│   on attributes/user attributes.tf line 7, in resource "azuread_user_flow_attribute" "bsa":
+│    7: resource "azuread_user_flow_attribute" "bsa" {
+│ 
+│ UserFlowAttributesClient.BaseClient.Post(): unexpected status 404 with OData error: AADB2C90063: There is a problem with the service.
