@@ -116,4 +116,31 @@ Error: Creating user flow attribute "Business Service Authorisation"
 
 
 
+# main.tf
+
+variable "b2c_tenant_name" {
+  description = "The name of the B2C tenant"
+}
+
+variable "user_flow_id" {
+  description = "The ID of the user flow to delete"
+}
+
+resource "null_resource" "delete_user_flow" {
+  triggers = {
+    always_run = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      curl -X DELETE \
+           -H "Authorization: Bearer ${var.access_token}" \
+           "https://main.b2cadmin.ext.azure.com/api/adminuserjourneys/${var.user_flow_id}?tenantId=${var.b2c_tenant_name}"
+    EOT
+  }
+}
+
+
+
+
 https://main.b2cadmin.ext.azure.com/api/adminuserjourneys/B2C_1_signin?tenantId=azb2cpocemeka.onmicrosoft.com
